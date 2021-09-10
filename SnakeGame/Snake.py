@@ -115,6 +115,7 @@ class SnakeGame:
                     if (temp != -current):
                         current = temp
             
+            #region_Hear is the part I wrote
             self.board[self.snake.head[0]][self.snake.head[1]][SnakeGame.element["SPRITE"]] = SnakeGame.sprite["BODY"]
             self.board[self.snake.head[0]][self.snake.head[1]][SnakeGame.element["DIRECTION"]] = current
             self.CalDirection(current, self.snake.head)
@@ -135,7 +136,8 @@ class SnakeGame:
                 self.board[self.snake.tail[0]][self.snake.tail[1]][SnakeGame.element["DIRECTION"]] = SnakeGame.direction["NON_DIR"]
                 self.CalDirection(tailDir, self.snake.tail)
             eat = False
-              
+            #endregion
+                
             self.DrawScene()
             print("Score: {}".format(self.snake.length - self.initLen))
 
