@@ -16,12 +16,18 @@ EAST_DIRECTION = ClassTemplate.EAST_DIRECTION
 
 key_input = { pygame.K_w: NORTH_DIRECTION, pygame.K_s: SOUTH_DIRECTION, pygame.K_a: WEST_DIRECTION, pygame.K_d:EAST_DIRECTION}
 
-# Image Load
-character1 = pygame.image.load("Farmer.png").convert_alpha()
+# Load Image
+character1 = pygame.image.load("Student.png").convert_alpha()
 # player = pygame.transform.scale(character1, (50, 50))
-character2 = pygame.image.load("drunkard0.png").convert_alpha()
-backgroundImage = pygame.image.load("ground2.png").convert_alpha()
+character2 = pygame.image.load("Professor.png").convert_alpha()
+backgroundImage = pygame.image.load("ground.png").convert_alpha()
 backgroundImage2 = pygame.transform.scale(backgroundImage, (800, 500))
+backgroundImage3 = pygame.image.load("ground2.png").convert_alpha()
+backgroundImage4 = pygame.transform.scale(backgroundImage3, (800, 500))
+
+doorImage = pygame.image.load("MapImage2.png").convert_alpha()
+doorImage2 = ClassTemplate.SpriteSheet(doorImage)
+doorImage3 = doorImage2.get_image(0, 13, 48, 48, 1, (0, 0, 0))
 
 
 
@@ -30,15 +36,39 @@ pygame.init()
 basicFont = pygame.font.SysFont(None, 48)
 mainClock = pygame.time.Clock()
 
-player_position = [50, 50]
-player_speed = 5
-player_trigger_size = 30
-player = ClassTemplate.TriggerObject(player_position, player_trigger_size, player_speed, character1)
+stage_clear = False
 
-professor_position = [300, 300]
-professor_speed = 6
-professor_trigger_size = 50
-professor = ClassTemplate.TriggerObject(professor_position, professor_trigger_size, professor_speed, character2)
+game_main_screen = backgroundImage2
+game_sub_screen = backgroundImage4
+game_screen = backgroundImage2
+is_main_screen = True
+is_sub_screen = False
+
+quest1:bool = True # 뱀 잡아오는 quest
+quest2:bool = False # 벽돌 잡아오는 quest
+quest3:bool = False # 깃발 잡아오는 quest
+# quest4:bool = False
+quest5:bool = False # Professor quest
+
+skill_SB:bool = True # 기본 스킬
+skill_E:bool = False # attract
+skill_F:bool = False # attack
+skill_R:bool = False # boom
+# skill_RMB:bool = False #shoot
+
+player_position = [50, 50] # Player Init
+player_trigger_size = 30
+player_speed = 4
+player = ClassTemplate.Player(character1, player_position, player_trigger_size, player_speed, 10, 1)
+
+professor_position = [300, 300] # Professor Init
+professor_trigger_size = 200
+professor_speed = 2
+professor = ClassTemplate.Monster(character2, professor_position, professor_trigger_size, professor_speed, 20, 1)
+
+door_position = [0, 200]
+door_trigger_size = 50
+door_to_sub_screen = ClassTemplate.TriggerObject(doorImage3, door_position, door_trigger_size)
 
 
 # Game Loop
@@ -56,7 +86,60 @@ while True:
     #     # pygame.event.post(pygame.event.Event(USEREVENT, message="heymama"))
     #     pygame.time.set_timer(pygame.event.Event(USEREVENT, message="heymama"), 1000)
 
+
+    # 단계 설정 code
+    if (quest1 == True):
+        
+        # ...stage_clear = True
+        if stage_clear == True:
+            quest1 = False
+            quest2 = True
+            skill_F = True
+            stage_clear = False
+    elif (quest2 == True):
+        
+        if stage_clear == True:
+            quest2 = False
+            quest3 = True
+            skill_R = True
+            stage_clear = False
+    elif (quest3 == True):
+        
+        if stage_clear == True:
+            quest3 = False
+            # quest4 = True
+            quest5 = True
+            # skill_RMB = True
+            stage_clear = False
+    # elif (quest4 == True):
+    elif (quest5 == True):
+        
+        if stage_clear == True:
+            quest1 = False
+            skill_F = True
+            stage_clear = False
+
     pressed = pygame.key.get_pressed()
+
+    # player가 특정 맵에 들어가면
+    if door_to_sub_screen.is_collided_with(player) and is_main_screen and pressed[pygame.K_SPACE]:
+        game_screen = game_sub_screen
+        door_to_sub_screen.position = [750, 200]
+        player.position = [710, 200]
+        is_main_screen = False
+        is_sub_screen = True
+    elif door_to_sub_screen.is_collided_with(player) and is_sub_screen and pressed[pygame.K_SPACE]:
+        game_screen = game_main_screen
+        door_to_sub_screen.position = [0, 200]
+        player.position = [50, 200]
+        is_main_screen = True
+        is_sub_screen = False
+
+    # 해당 맵의 Monster만드는 코드 만들기!
+    if game_screen == game_sub_screen:
+        # make_monster()
+        pass
+    
     if pressed[pygame.K_w]:
         player.transform_position(key_input[pygame.K_w])
     elif pressed[pygame.K_s]:
@@ -68,16 +151,18 @@ while True:
 
 
     if player.is_collided_with(professor):
-        print("교수님: 아야")
+        professor.attracted(player)
 
-    # draw_block(windowSurface, BLACK, playerPosition)
-    character1.set_colorkey(pygame.Color(255, 0, 255))
-    # print(character1.get_colorkey())
-    windowSurface.blit(backgroundImage2, (0, 0)) # 배경 그리기(background 가 표시되는 위치)
-    # windowSurface.blit(character1, player.position)
+
+
+
+
+    # Surface Draw
+    windowSurface.blit(game_screen, (0, 0))
+    windowSurface.blit(door_to_sub_screen.now_image, door_to_sub_screen.position)
     windowSurface.blit(player.now_image, player.position)
     windowSurface.blit(professor.now_image, professor.position)
-    
+
     pygame.display.update()
     mainClock.tick(50)
 
