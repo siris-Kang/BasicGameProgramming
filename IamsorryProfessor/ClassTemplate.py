@@ -1,4 +1,4 @@
-import pygame
+import pygame, sys
 import math
 from pygame.locals import *
 
@@ -25,7 +25,6 @@ GRAY = (100,100,100)
 class MessageBox:
     def __init__(self):
         b = 0
-
 
 # get mini item image
 class SpriteSheet():
@@ -120,6 +119,9 @@ class Player(Character):
 class Monster(Character):
     def __init__(self, image, position, triger_size, speed, stamina, damage):
         super().__init__(image, position, triger_size, speed, stamina, damage)
+
+    # def move_randomly(self):
+    #     self.transform_position(NORTH_DIRECTION)
     
     def attracted(self, other): #다른 물체에 이끌림
         position0 = self.position[0] - other.position[0]

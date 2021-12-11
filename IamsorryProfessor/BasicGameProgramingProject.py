@@ -1,6 +1,8 @@
 import pygame, sys
+import random
 from pygame.locals import *
 import ClassTemplate
+import ConstructMap
 
 # Set Window
 WINDOWWIDTH = ClassTemplate.WINDOWWIDTH
@@ -29,6 +31,8 @@ doorImage = pygame.image.load("MapImage2.png").convert_alpha()
 doorImage2 = ClassTemplate.SpriteSheet(doorImage)
 doorImage3 = doorImage2.get_image(0, 13, 48, 48, 1, (0, 0, 0))
 
+snakeImage = pygame.image.load("likesnake.png").convert_alpha()
+
 
 
 # Pygame Init
@@ -37,6 +41,7 @@ basicFont = pygame.font.SysFont(None, 48)
 mainClock = pygame.time.Clock()
 
 stage_clear = False
+stage_init = True
 
 game_main_screen = backgroundImage2
 game_sub_screen = backgroundImage4
@@ -64,16 +69,28 @@ player = ClassTemplate.Player(character1, player_position, player_trigger_size, 
 professor_position = [300, 300] # Professor Init
 professor_trigger_size = 200
 professor_speed = 2
-professor = ClassTemplate.Monster(character2, professor_position, professor_trigger_size, professor_speed, 20, 1)
+professor_stamina = 20
+prifessor_damage = 1
+professor = ClassTemplate.Monster(character2, professor_position, professor_trigger_size, professor_speed, professor_stamina, prifessor_damage)
 
 door_position = [0, 200]
 door_trigger_size = 50
 door_to_sub_screen = ClassTemplate.TriggerObject(doorImage3, door_position, door_trigger_size)
 
+# monster_list = [range(10)] # 10칸짜리 list
+quest1_monster_type = [snakeImage, professor_trigger_size, professor_speed, professor_stamina, prifessor_damage]
+# quest2_monster_type = [image, trigger_size, speed, stamina, damage]
+# quest3_monster_type = [image, trigger_size, speed, stamina, damage]
+# quest4_monster_type = [image, trigger_size, speed, stamina, damage]
+
 
 # Game Loop
 while True:
     windowSurface.fill(ClassTemplate.WHITE)
+
+    # Map Surface Draw
+    windowSurface.blit(game_screen, (0, 0))
+    windowSurface.blit(door_to_sub_screen.now_image, door_to_sub_screen.position)
 
     for event in pygame.event.get():
         if event.type == QUIT:
@@ -89,7 +106,10 @@ while True:
 
     # 단계 설정 code
     if (quest1 == True):
-        
+        if stage_init == True:
+            monster_list = ConstructMap.make_monster(quest1_monster_type)
+            stage_init = False
+
         # ...stage_clear = True
         if stage_clear == True:
             quest1 = False
@@ -97,14 +117,20 @@ while True:
             skill_F = True
             stage_clear = False
     elif (quest2 == True):
-        
+        if stage_init == True:
+            monster_list = ConstructMap.make_monster(quest1_monster_type) #
+            stage_init = False
+
         if stage_clear == True:
             quest2 = False
             quest3 = True
             skill_R = True
             stage_clear = False
     elif (quest3 == True):
-        
+        if stage_init == True:
+            monster_list = ConstructMap.make_monster(quest1_monster_type) #
+            stage_init = False
+
         if stage_clear == True:
             quest3 = False
             # quest4 = True
@@ -113,11 +139,13 @@ while True:
             stage_clear = False
     # elif (quest4 == True):
     elif (quest5 == True):
+        # 교수님을 몬스터로 바꿔주세요^^
         
         if stage_clear == True:
             quest1 = False
             skill_F = True
             stage_clear = False
+
 
     pressed = pygame.key.get_pressed()
 
@@ -153,15 +181,17 @@ while True:
     if player.is_collided_with(professor):
         professor.attracted(player)
 
+    if game_screen == game_sub_screen:
+        for i in range(10):
+            windowSurface.blit(monster_list[i].now_image, monster_list[i].position)
+            
+            # monster_list[i].move_randomly()
 
-
-
-
-    # Surface Draw
-    windowSurface.blit(game_screen, (0, 0))
-    windowSurface.blit(door_to_sub_screen.now_image, door_to_sub_screen.position)
+    # NPC Surface Draw
     windowSurface.blit(player.now_image, player.position)
     windowSurface.blit(professor.now_image, professor.position)
+
+    # windowSurface.blit(snakeImage, professor.position)
 
     pygame.display.update()
     mainClock.tick(50)
