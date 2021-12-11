@@ -1,5 +1,6 @@
 import pygame, sys
 import math
+import random
 from pygame.locals import *
 
 
@@ -65,6 +66,7 @@ class Character(TriggerObject):
         self.top_left = [self.position[0] - self.triger_size / 2, self.position[1] - self.triger_size / 2]
         self.speed = speed
         self.stamina = stamina
+        self.fix_stamina = stamina
         self.damage = damage
         self.alive = True
 
@@ -85,28 +87,28 @@ class Character(TriggerObject):
     def transform_position(self, direction): # direction = [ , ]
         if direction == NORTH_DIRECTION:
             self.now_image = self.image_array[0]
-            if  self.position[1] - self.speed != 0:
+            if  self.position[1] - self.speed > 0:
                 self.position[1] += direction[1]*self.speed
 
         elif direction == SOUTH_DIRECTION:
             self.now_image = self.image_array[2]
-            if self.position[1] + self.speed != WINDOWHEIGHT - self.triger_size:
+            if self.position[1] + self.speed < WINDOWHEIGHT - self.triger_size:
                 self.position[1] += direction[1]*self.speed
 
         elif direction == WEST_DIRECTION:
             self.now_image = self.image_array[4]
-            if  self.position[0] - self.speed != 0:
+            if  self.position[0] - self.speed > 0:
                 self.position[0] += direction[0]*self.speed
 
         elif direction == EAST_DIRECTION:
             self.now_image = self.image_array[6]
-            if self.position[0] + self.speed != WINDOWWIDTH - self.triger_size:
+            if self.position[0] + self.speed < WINDOWWIDTH - self.triger_size:
                 self.position[0] += direction[0]*self.speed
         
         self.now_image.set_colorkey((255, 0, 255))
 
-    def lose_stamina(self, other):
-        self.stamina -= other.damage
+    def lose_stamina(self, other_damage):
+        self.stamina -= other_damage
         if self.stamina <= 0:
             self.alive = False
 
@@ -114,12 +116,10 @@ class Character(TriggerObject):
         self.stamina += 1
 
 
-
 class Player(Character):
     def __init__(self, image, position, triger_size, speed, stamina, damage):
         super().__init__(image, position, triger_size, speed, stamina, damage)
         self.score = 0.0
-
 
 
 class Monster(Character):
@@ -142,9 +142,27 @@ class Monster(Character):
             elif position0 < 0:
                 self.transform_position(EAST_DIRECTION)
 
+    def refresh_monster(self):
+        self.stamina = self.fix_stamina
+        position0 = random.randrange(100, 700)
+        position1 = random.randrange(100, 400)
+        self.position = [position0, position1]
+
+
 
 class SkillObject(TriggerObject):
     def __init__(self, image, position, triger_size):
         super().__init__(image, position, triger_size)
-        # 일단은 만들어 두지만 그냥 Trigger Object써도 될듯? 나중에 확인 후 수정하기
-        
+        self.alive = False
+        self.start_ticks = pygame.time.get_ticks()
+        self.elapsed_time = (pygame.time.get_ticks() - self.start_ticks) / 1000
+
+    def make_new_postion(self, x, y):
+        self.position = [x, y]
+        self.start_ticks = pygame.time.get_ticks()
+
+    def existence_countdown(self):
+        self.elapsed_time = (pygame.time.get_ticks() - self.start_ticks) / 1000
+        # print(self.elapsed_time)
+        if self.elapsed_time > 3:
+            self.alive = False
