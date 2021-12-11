@@ -32,7 +32,7 @@ class SpriteSheet():
         self.sheet = image
     
     def get_image(self, num_x, num_y, width, height, scale, color):
-        image = pygame.Surface((width, height)).convert_alpha()
+        image = pygame.Surface((width, height))
         image.blit(self.sheet, (0, 0), Rect((num_x*height), (num_y*width), width, height))
         image = pygame.transform.scale(image, (width*scale, height* scale))
         return image
@@ -66,18 +66,19 @@ class Character(TriggerObject):
         self.speed = speed
         self.stamina = stamina
         self.damage = damage
+        self.alive = True
 
         sprite_sheet = SpriteSheet(self.image)
         self.image_array = [
-            sprite_sheet.get_image(0, 1, 16, 16, 2, (0, 0, 0)).convert_alpha(), # index = 0, image = NORTH_DIRECTION
-            sprite_sheet.get_image(1, 1, 16, 16, 2, (0, 0, 0)).convert_alpha(), # index = 1, image = NORTH_DIRECTION
-            sprite_sheet.get_image(0, 3, 16, 16, 2, (0, 0, 0)).convert_alpha(), # index = 2, image = SOUTH_DIRECTION
-            sprite_sheet.get_image(1, 3, 16, 16, 2, (0, 0, 0)).convert_alpha(), # index = 3, image = SOUTH_DIRECTION
-            sprite_sheet.get_image(0, 4, 16, 16, 2, (0, 0, 0)).convert_alpha(), # index = 4, image = WEST_DIRECTION
-            sprite_sheet.get_image(1, 4, 16, 16, 2, (0, 0, 0)).convert_alpha(), # index = 5, image = WEST_DIRECTION
-            sprite_sheet.get_image(0, 2, 16, 16, 2, (0, 0, 0)).convert_alpha(), # index = 6, image = EAST_DIRECTION
-            sprite_sheet.get_image(1, 2, 16, 16, 2, (0, 0, 0)).convert_alpha(), # index = 7, image = EAST_DIRECTION
-            sprite_sheet.get_image(2, 0, 16, 16, 2, (0, 0, 0)).convert_alpha() # index = 8, image = Stand Image
+            sprite_sheet.get_image(0, 1, 16, 16, 2, (0, 0, 0)), # index = 0, image = NORTH_DIRECTION
+            sprite_sheet.get_image(1, 1, 16, 16, 2, (0, 0, 0)), # index = 1, image = NORTH_DIRECTION
+            sprite_sheet.get_image(0, 3, 16, 16, 2, (0, 0, 0)), # index = 2, image = SOUTH_DIRECTION
+            sprite_sheet.get_image(1, 3, 16, 16, 2, (0, 0, 0)), # index = 3, image = SOUTH_DIRECTION
+            sprite_sheet.get_image(0, 4, 16, 16, 2, (0, 0, 0)), # index = 4, image = WEST_DIRECTION
+            sprite_sheet.get_image(1, 4, 16, 16, 2, (0, 0, 0)), # index = 5, image = WEST_DIRECTION
+            sprite_sheet.get_image(0, 2, 16, 16, 2, (0, 0, 0)), # index = 6, image = EAST_DIRECTION
+            sprite_sheet.get_image(1, 2, 16, 16, 2, (0, 0, 0)), # index = 7, image = EAST_DIRECTION
+            sprite_sheet.get_image(2, 0, 16, 16, 2, (0, 0, 0)) # index = 8, image = Stand Image
         ]
         self.now_image = self.image_array[8]
 
@@ -104,17 +105,22 @@ class Character(TriggerObject):
         
         self.now_image.set_colorkey((255, 0, 255))
 
-    def attacked(self, other):
+    def lose_stamina(self, other):
         self.stamina -= other.damage
+        if self.stamina <= 0:
+            self.alive = False
 
     def get_stamina(self):
         self.stamina += 1
+
 
 
 class Player(Character):
     def __init__(self, image, position, triger_size, speed, stamina, damage):
         super().__init__(image, position, triger_size, speed, stamina, damage)
         self.score = 0.0
+
+
 
 class Monster(Character):
     def __init__(self, image, position, triger_size, speed, stamina, damage):
@@ -135,6 +141,7 @@ class Monster(Character):
                 self.transform_position(WEST_DIRECTION)
             elif position0 < 0:
                 self.transform_position(EAST_DIRECTION)
+
 
 class SkillObject(TriggerObject):
     def __init__(self, image, position, triger_size):

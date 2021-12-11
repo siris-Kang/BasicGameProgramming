@@ -19,7 +19,8 @@ EAST_DIRECTION = ClassTemplate.EAST_DIRECTION
 key_input = { pygame.K_w: NORTH_DIRECTION, pygame.K_s: SOUTH_DIRECTION, pygame.K_a: WEST_DIRECTION, pygame.K_d:EAST_DIRECTION}
 
 # Load Image
-character1 = pygame.image.load("Student.png").convert_alpha()
+character1 = pygame.image.load("Student2.png")
+# print(character1.get_alpha(), character1.get_colorkey())
 # player = pygame.transform.scale(character1, (50, 50))
 character2 = pygame.image.load("Professor.png").convert_alpha()
 backgroundImage = pygame.image.load("ground.png").convert_alpha()
@@ -77,11 +78,13 @@ door_position = [0, 200]
 door_trigger_size = 50
 door_to_sub_screen = ClassTemplate.TriggerObject(doorImage3, door_position, door_trigger_size)
 
+monster_num = 10
 # monster_list = [range(10)] # 10칸짜리 list
 quest1_monster_type = [snakeImage, professor_trigger_size, professor_speed, professor_stamina, prifessor_damage]
 # quest2_monster_type = [image, trigger_size, speed, stamina, damage]
 # quest3_monster_type = [image, trigger_size, speed, stamina, damage]
 # quest4_monster_type = [image, trigger_size, speed, stamina, damage]
+
 
 
 # Game Loop
@@ -163,10 +166,7 @@ while True:
         is_main_screen = True
         is_sub_screen = False
 
-    # 해당 맵의 Monster만드는 코드 만들기!
-    if game_screen == game_sub_screen:
-        # make_monster()
-        pass
+        
     
     if pressed[pygame.K_w]:
         player.transform_position(key_input[pygame.K_w])
@@ -178,20 +178,24 @@ while True:
         player.transform_position(key_input[pygame.K_d])
 
 
-    if player.is_collided_with(professor):
-        professor.attracted(player)
+    # if player.is_collided_with(professor):
+    #     professor.attracted(player)
 
-    if game_screen == game_sub_screen:
-        for i in range(10):
-            windowSurface.blit(monster_list[i].now_image, monster_list[i].position)
-            
-            # monster_list[i].move_randomly()
+    for i in range(monster_num):
+        if monster_list[i].is_collided_with(player) and pressed[pygame.K_SPACE]:
+            monster_list[i].lose_stamina(player)
+
 
     # NPC Surface Draw
+    if game_screen == game_sub_screen:
+        for i in range(monster_num):
+            if monster_list[i].alive:
+                windowSurface.blit(monster_list[i].now_image, monster_list[i].position)
+
     windowSurface.blit(player.now_image, player.position)
     windowSurface.blit(professor.now_image, professor.position)
 
-    # windowSurface.blit(snakeImage, professor.position)
+    windowSurface.blit(snakeImage, professor.position)
 
     pygame.display.update()
     mainClock.tick(50)
