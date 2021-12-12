@@ -1,31 +1,15 @@
-import pygame, sys
+import pygame
 import math
 import random
 from pygame.locals import *
+import Setting
 
+# Setting
+NORTH_DIRECTION = Setting.NORTH_DIRECTION
+SOUTH_DIRECTION = Setting.SOUTH_DIRECTION
+WEST_DIRECTION = Setting.WEST_DIRECTION
+EAST_DIRECTION = Setting.EAST_DIRECTION
 
-#Setting
-WINDOWWIDTH = 800
-WINDOWHEIGHT = 500
-
-NORTH_DIRECTION = [0, -1]
-SOUTH_DIRECTION = [0, 1]
-WEST_DIRECTION = [-1, 0]
-EAST_DIRECTION = [1, 0]
-
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-BLUE = (0, 0, 255)
-GREEN = (0, 255, 0)
-RED = (255, 0, 0)
-YELLOW = (255, 255, 0)
-GRAY = (100,100,100)
-
-
-    
-class MessageBox:
-    def __init__(self):
-        b = 0
 
 # get mini item image
 class SpriteSheet():
@@ -79,7 +63,7 @@ class Character(TriggerObject):
 
         elif direction == SOUTH_DIRECTION:
             self.now_image = self.image_array[1*count]
-            if self.position[1] + self.speed < WINDOWHEIGHT - self.triger_size:
+            if self.position[1] + self.speed < Setting.WINDOWHEIGHT - self.triger_size:
                 self.position[1] += direction[1]*self.speed
 
         elif direction == WEST_DIRECTION:
@@ -89,7 +73,7 @@ class Character(TriggerObject):
 
         elif direction == EAST_DIRECTION:
             self.now_image = self.image_array[3*count]
-            if self.position[0] +  direction[0]*self.speed < WINDOWWIDTH - self.triger_size:
+            if self.position[0] +  direction[0]*self.speed < Setting.WINDOWWIDTH - self.triger_size:
                 self.position[0] += direction[0]*self.speed
 
         # self.now_image.set_colorkey((255, 0, 255))
@@ -156,61 +140,3 @@ class SkillObject(TriggerObject):
         # print(self.elapsed_time)
         if self.elapsed_time > 3:
             self.alive = False
-
-
-
-
-# class Character(TriggerObject):
-#     def __init__(self, image, position, triger_size, speed, stamina, damage): #이미지, 위치, Trigger크기, 속도, 체력, 공격력
-#         super().__init__(image, position, triger_size)
-#         self.top_left = [self.position[0] - self.triger_size / 2, self.position[1] - self.triger_size / 2]
-#         self.speed = speed
-#         self.stamina = stamina
-#         self.fix_stamina = stamina
-#         self.damage = damage
-#         self.alive = True
-
-#         sprite_sheet = SpriteSheet(self.image)
-#         self.image_array = [
-#             sprite_sheet.get_image(0, 1, 16, 16, 2, (0, 0, 0)), # index = 0, image = NORTH_DIRECTION
-#             sprite_sheet.get_image(1, 1, 16, 16, 2, (0, 0, 0)), # index = 1, image = NORTH_DIRECTION
-#             sprite_sheet.get_image(0, 3, 16, 16, 2, (0, 0, 0)), # index = 2, image = SOUTH_DIRECTION
-#             sprite_sheet.get_image(1, 3, 16, 16, 2, (0, 0, 0)), # index = 3, image = SOUTH_DIRECTION
-#             sprite_sheet.get_image(0, 4, 16, 16, 2, (0, 0, 0)), # index = 4, image = WEST_DIRECTION
-#             sprite_sheet.get_image(1, 4, 16, 16, 2, (0, 0, 0)), # index = 5, image = WEST_DIRECTION
-#             sprite_sheet.get_image(0, 2, 16, 16, 2, (0, 0, 0)), # index = 6, image = EAST_DIRECTION
-#             sprite_sheet.get_image(1, 2, 16, 16, 2, (0, 0, 0)), # index = 7, image = EAST_DIRECTION
-#             sprite_sheet.get_image(2, 0, 16, 16, 2, (0, 0, 0)) # index = 8, image = Stand Image
-#         ]
-#         self.now_image = self.image_array[8]
-
-#     def transform_position(self, direction): # direction = [ , ]
-#         if direction == NORTH_DIRECTION:
-#             self.now_image = self.image_array[0]
-#             if  self.position[1] - self.speed > 0:
-#                 self.position[1] += direction[1]*self.speed
-
-#         elif direction == SOUTH_DIRECTION:
-#             self.now_image = self.image_array[2]
-#             if self.position[1] + self.speed < WINDOWHEIGHT - self.triger_size:
-#                 self.position[1] += direction[1]*self.speed
-
-#         elif direction == WEST_DIRECTION:
-#             self.now_image = self.image_array[4]
-#             if  self.position[0] - self.speed > 0:
-#                 self.position[0] += direction[0]*self.speed
-
-#         elif direction == EAST_DIRECTION:
-#             self.now_image = self.image_array[6]
-#             if self.position[0] + self.speed < WINDOWWIDTH - self.triger_size:
-#                 self.position[0] += direction[0]*self.speed
-        
-#         self.now_image.set_colorkey((255, 0, 255))
-
-#     def lose_stamina(self, other_damage):
-#         self.stamina -= other_damage
-#         if self.stamina <= 0:
-#             self.alive = False
-
-#     def get_stamina(self):
-#         self.stamina += 1

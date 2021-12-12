@@ -1,59 +1,45 @@
 import pygame, sys
 from pygame.locals import *
+import Setting
 import ClassTemplate
 import ConstructMap
+import DrawGameUI
 
 # Set Window
-WINDOWWIDTH = ClassTemplate.WINDOWWIDTH
-WINDOWHEIGHT = ClassTemplate.WINDOWHEIGHT
-windowSurface = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT), 0, 16)
-pygame.display.set_caption('과제하는 게임')
+WINDOWWIDTH = Setting.WINDOWWIDTH
+WINDOWHEIGHT = Setting.WINDOWHEIGHT
+# windowSurface = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT), 0, 16)
+# pygame.display.set_caption('과제하는 게임')
 
 # Set Direction
-NORTH_DIRECTION = ClassTemplate.NORTH_DIRECTION
-SOUTH_DIRECTION = ClassTemplate.SOUTH_DIRECTION
-WEST_DIRECTION = ClassTemplate.WEST_DIRECTION
-EAST_DIRECTION = ClassTemplate.EAST_DIRECTION
-
-key_input = { pygame.K_w: NORTH_DIRECTION, pygame.K_s: SOUTH_DIRECTION, pygame.K_a: WEST_DIRECTION, pygame.K_d:EAST_DIRECTION}
+NORTH_DIRECTION = Setting.NORTH_DIRECTION
+SOUTH_DIRECTION = Setting.SOUTH_DIRECTION
+WEST_DIRECTION = Setting.WEST_DIRECTION
+EAST_DIRECTION = Setting.EAST_DIRECTION
 
 # Load Image
-character1 = pygame.image.load("Character1.png").convert_alpha()
-# character1.set_colorkey(ClassTemplate.BLACK)
-# character1.set_alpha(128)
-# print(character1.get_alpha(), character1.get_colorkey())
-# player = pygame.transform.scale(character1, (50, 50))
-character2 = pygame.image.load("Character2.png").convert_alpha()
-# print(character2.get_alpha(), character2.get_colorkey())
-backgroundImage = pygame.image.load("ground.png").convert_alpha()
-backgroundImage2 = pygame.transform.scale(backgroundImage, (800, 500))
-backgroundImage3 = pygame.image.load("ground2.png").convert_alpha()
-backgroundImage4 = pygame.transform.scale(backgroundImage3, (800, 500))
+main_surface_image = Setting.main_surface_image
+stage1_surface_image = Setting.stage1_surface_image
 
-doorImage = pygame.image.load("MapImage2.png").convert_alpha()
-doorImage2 = ClassTemplate.SpriteSheet(doorImage)
-doorImage3 = doorImage2.get_image(0, 13, 48, 48, 1, (0, 0, 0))
 
-snakeImage = pygame.image.load("snake.png").convert_alpha()
-appleImage = pygame.image.load("apple.png").convert_alpha()
-boomImage = pygame.image.load("fireball.png").convert_alpha()
-
+door_image2 = ClassTemplate.SpriteSheet(Setting.door_image)
+door_image = door_image2.get_image(0, 13, 48, 48, 1, (0, 0, 0))
 
 # Pygame Init
 pygame.init()
-basicFont = pygame.font.SysFont(None, 48)
+basicFont = pygame.font.SysFont("NanumGothic.ttf", 32)
 mainClock = pygame.time.Clock()
 
 stage_clear = False
 stage_init = True
 
-game_main_screen = backgroundImage2
-game_sub_screen = backgroundImage4
-game_screen = backgroundImage2
+game_main_screen = main_surface_image
+game_sub_screen = stage1_surface_image
+game_screen = main_surface_image
 is_main_screen = True
 is_sub_screen = False
 
-quest1:bool = True # 뱀 잡아오는 quest
+quest1:bool = True # 뱀 잡아오는 quest # list로 만들면 좋을 듯
 quest2:bool = False # 벽돌 잡아오는 quest
 quest3:bool = False # 깃발 잡아오는 quest
 # quest4:bool = False
@@ -73,7 +59,7 @@ stage_num = 0
 player_position = [50, 50] # Player Init
 player_trigger_size = 30
 player_speed = 4
-character1_array = ConstructMap.make_player_sprite_array(character1)
+character1_array = ConstructMap.make_player_sprite_array(Setting.player_image_base)
 player = ClassTemplate.Player(character1_array, player_position, player_trigger_size, player_speed, 10, 1)
 num_caught_monster = [0, 0, 0]
 stage_clear_condition = [10, 10, 10]
@@ -83,26 +69,28 @@ professor_trigger_size = 200
 professor_speed = 2
 professor_stamina = 20
 professor_damage = 1
-character2_array = ConstructMap.make_professor_spite_array(character2)
+character2_array = ConstructMap.make_professor_spite_array(Setting.professor_image_base)
 professor = ClassTemplate.Monster(character2_array, professor_position, professor_trigger_size, professor_speed, professor_stamina, professor_damage)
 is_professor_moster = False
 
 door_position = [0, 200]
 door_trigger_size = 50
-door_to_sub_screen = ClassTemplate.TriggerObject(ConstructMap.make_skill_object_sprite_array(doorImage3, 1), door_position, door_trigger_size)
+door_to_sub_screen = ClassTemplate.TriggerObject(ConstructMap.make_skill_object_sprite_array(door_image, 1), door_position, door_trigger_size)
 
 monster_num = 10
 # monster_list = [range(10)] # 10칸짜리 list
-quest1_monster_type = [ConstructMap.make_skill_object_sprite_array(snakeImage, 1), professor_trigger_size, professor_speed, professor_stamina, professor_damage]
+quest1_monster_type = [ConstructMap.make_skill_object_sprite_array(Setting.snake_image, 1), professor_trigger_size, professor_speed, professor_stamina, professor_damage]
 # quest2_monster_type = [image, trigger_size, speed, stamina, damage]
 # quest3_monster_type = [image, trigger_size, speed, stamina, damage]
 # quest4_monster_type = [image, trigger_size, speed, stamina, damage]
 
 apple_trigger_size = 50
-skill_E_apple = ClassTemplate.SkillObject(ConstructMap.make_skill_object_sprite_array(appleImage, 2), door_position, apple_trigger_size)
+skill_E_apple = ClassTemplate.SkillObject(ConstructMap.make_skill_object_sprite_array(Setting.apple_image, 2), door_position, apple_trigger_size)
 boom_trigger_size = 30
-skill_R_boom = ClassTemplate.SkillObject(ConstructMap.make_skill_object_sprite_array(boomImage, 2), door_position, boom_trigger_size)
+skill_R_boom = ClassTemplate.SkillObject(ConstructMap.make_skill_object_sprite_array(Setting.boom_image, 2), door_position, boom_trigger_size)
 
+message_box_image = pygame.transform.scale(Setting.message_box_image, (600, 200))
+ui1 = DrawGameUI.DrawMessageBox(message_box_image, basicFont, "Hello", [100, 250], 600, 300)
 
 
 # Game Loop
@@ -185,16 +173,23 @@ while True:
         is_main_screen = True
         is_sub_screen = False
 
+    # Professor의 동작
+    if is_professor_moster == False:
+        if player.is_collided_with(professor) and pressed[pygame.K_SPACE] and professor.alive == True:
+            ui1.is_draw = True
+    else:
+        pass
+
         
     # # Keyboard pressed
     if pressed[pygame.K_w]:
-        player.transform_position(key_input[pygame.K_w])
+        player.transform_position(Setting.key_input[pygame.K_w])
     elif pressed[pygame.K_s]:
-        player.transform_position(key_input[pygame.K_s])
+        player.transform_position(Setting.key_input[pygame.K_s])
     elif pressed[pygame.K_a]:
-        player.transform_position(key_input[pygame.K_a])
+        player.transform_position(Setting.key_input[pygame.K_a])
     elif pressed[pygame.K_d]:
-        player.transform_position(key_input[pygame.K_d])
+        player.transform_position(Setting.key_input[pygame.K_d])
 
 
     # Skill
@@ -229,32 +224,37 @@ while True:
 
     
     # Surface Draw
-    windowSurface.fill(ClassTemplate.WHITE)
-    windowSurface.blit(game_screen, (0, 0))
-    windowSurface.blit(door_to_sub_screen.now_image, door_to_sub_screen.position)
+    Setting.windowSurface.fill(Setting.WHITE)
+    Setting.windowSurface.blit(game_screen, (0, 0))
+    Setting.windowSurface.blit(door_to_sub_screen.now_image, door_to_sub_screen.position)
  
     if game_screen == game_sub_screen:
         for i in range(monster_num):
             if monster_list[i].alive == False:
                 monster_list[i].alive = True
                 monster_list[i].refresh_monster()
-            windowSurface.blit(monster_list[i].now_image, monster_list[i].position)
+            Setting.windowSurface.blit(monster_list[i].now_image, monster_list[i].position)
     elif game_screen == game_main_screen:
-        windowSurface.blit(professor.now_image, professor.position)
+        if professor.alive == True:
+            Setting.windowSurface.blit(professor.now_image, professor.position)
 
     if skill_E_apple.alive == True:
-        windowSurface.blit(skill_E_apple.now_image, skill_E_apple.position)
+        Setting.windowSurface.blit(skill_E_apple.now_image, skill_E_apple.position)
         skill_E_apple.existence_countdown()
     if skill_R_boom.alive == True:
-        windowSurface.blit(skill_R_boom.now_image, skill_R_boom.position)
+        Setting.windowSurface.blit(skill_R_boom.now_image, skill_R_boom.position)
         skill_R_boom.existence_countdown()
 
-    windowSurface.blit(player.now_image, player.position)
+    Setting.windowSurface.blit(player.now_image, player.position)
 
     # print(stage_num)
     # print(num_caught_monster[stage_num])
 
-    # windowSurface.blit(skill_E_apple.now_image, player.position)
+    # Setting.windowSurface.blit(skill_E_apple.now_image, player.position)
+
+    # DrawGamdUI(message_box_image, basicFont, "Hello", [200, 200], 100, 100)
+    if ui1.is_draw == True:
+        ui1.draw_message()
 
     pygame.display.update()
     mainClock.tick(50)
@@ -268,6 +268,7 @@ while True:
     # Map Image만들기
     # UI로 player 체력 바 추가
     # Monster position위에도 체력 바 하나씩 달아주기
+    # 교수님이 막 뱀, 벽돌 등의 몬스터를 만들어서 뿌림ㅋㅋ
 
     # 메인 화면
     # 튜토리얼과 게임 설명
