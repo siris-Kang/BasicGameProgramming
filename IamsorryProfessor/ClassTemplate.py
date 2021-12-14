@@ -56,13 +56,13 @@ class Character(TriggerObject):
         self.stamina = stamina
         self.fix_stamina = stamina
         self.damage = damage
-        self.direction = NORTH_DIRECTION
+        self.direction = SOUTH_DIRECTION
         self.alive = True
 
         self.count_max = len(self.image_array)*2
         self.move_count = 0
 
-        self.now_image = self.image_array[0]
+        self.now_image = self.image_array[3]
 
     def transform_position(self, direction): # direction = [ , ]
         count = int(len(self.image_array)/4)
@@ -113,7 +113,9 @@ class Monster(Character):
     def __init__(self, image_array, position, triger_size, speed, stamina, damage):
         super().__init__(image_array, position, triger_size, speed, stamina, damage)
         self.time_delay = 100
-        self.time_count = 0
+        self.time_count_refresh = 0
+        self.time_count_position = 0
+        self.time_count_attack = 0
         i = random.randint(0, 3)
         self.direction = Setting.key_input_list[i]
 
@@ -121,7 +123,7 @@ class Monster(Character):
     # def move_randomly(self):
     #     self.transform_position(NORTH_DIRECTION)
     
-    def attracted(self, other): #다른 물체에 이끌림
+    def attracted(self, other = None): #다른 물체에 이끌림
         position0 = self.position[0] - other.position[0]
         position1 = self.position[1] - other.position[1]
         # if abs(position0) > self.speed or abs(position1) > self.speed:
@@ -132,28 +134,33 @@ class Monster(Character):
         elif position0 > self.speed:
             self.transform_position(WEST_DIRECTION)
         elif position0 < -self.speed:
-            self.transform_position(EAST_DIRECTION)
-                
+            self.transform_position(EAST_DIRECTION)                
 
     def refresh_monster(self):
-        if self.time_count >= self.time_delay:
-            self.time_count = 0
+        if self.time_count_refresh >= self.time_delay:
+            self.time_count_refresh = 0
             self.stamina = self.fix_stamina
             self.alive = True
             position0 = random.randrange(100, 700)
             position1 = random.randrange(100, 400)
             self.position = [position0, position1]
-        self.time_count += 1
+        self.time_count_refresh += 1
 
     def transform_position_randomly(self):
-        if self.time_count >= self.time_delay:
-            self.time_count = 0
+        if self.time_count_position >= self.time_delay:
+            self.time_count_position = 0
             i = random.randint(0, 3)
             self.direction = Setting.key_input_list[i]
-        self.time_count += 1
+        self.time_count_position += 1
         self.transform_position(self.direction)
         # if self.direction == NORTH_DIRECTION:
         #     self.position[1] -= self.direction[1]*self.speed
+
+    def attack(self, other):
+        if self.time_count_attack >= 50:
+            self.time_count_attack = 0
+            other.lose_stamina(self.damage)
+        self.time_count_attack += 1
 
 
 
@@ -171,15 +178,10 @@ class SkillObject(TriggerObject):
         self.position = [x, y]
         self.start_ticks = pygame.time.get_ticks()
 
-    def existence_countdown(self, other):
+    def existence_countdown(self):
         self.elapsed_time = (pygame.time.get_ticks() - self.start_ticks) / 1000
-        # print(self.elapsed_time)
         if self.elapsed_time > 3:
             self.alive = False
-            if other != None:
-                other.position = self.position
-                other.alive = True
-                other.play_skill()
 
     def play_skill(self):
         if self.move_count +1 == 25:

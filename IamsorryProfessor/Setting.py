@@ -35,6 +35,7 @@ player_image_base = pygame.image.load("Character1.png")
 # print(character1.get_alpha(), character1.get_colorkey())
 # player = pygame.transform.scale(character1, (50, 50))
 professor_image_base = pygame.image.load("Character2.png")
+# professor_mon_image_base = pygame.image.load("Character2.png")
 
 # Background Image Load
 backgroundImage = pygame.image.load("ground.png")
@@ -45,15 +46,15 @@ stage1_surface_image = pygame.transform.scale(backgroundImage1, (WINDOWWIDTH, WI
 
 # Asset Image Load
 door_image = pygame.image.load("MapImage2.png")
-message_box_image = pygame.image.load("health-bar.png")
+message_box_image = pygame.image.load("confirm_bg.png")
 
 # Monster Image
 snake_image = pygame.image.load("snake3.png")
-
+flag_image = pygame.image.load("flags.png")
 
 # SKill Image
 apple_image = pygame.image.load("apple.png")
-boom_image = pygame.image.load("fireball.png")
+boom_image = pygame.image.load("Bomb.png")
 
 base_skill = pygame.image.load("base_skill.png")
 boom_skill = pygame.image.load("Boomb_image.png")
@@ -61,3 +62,7 @@ boom_skill = pygame.image.load("Boomb_image.png")
 # # Font
 # pygame.init()
 # font = pygame.font.SysFont("NanumGothic.ttf", 32)
+
+# UI Image
+health_bar_box = pygame.image.load("health-bar-box.png")
+health_bar =  pygame.image.load("health-bar.png")
