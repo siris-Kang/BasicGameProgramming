@@ -53,10 +53,12 @@ class DrawMessageBox(DrawUI):
         self.font = font
         self.is_draw = False
 
-    def draw_message(self):
+    def draw_message(self, text):
         self.draw_image()
-        draw_text = self.font.render(self.text, True, Setting.WHITE)
+        # draw_text = self.font.render(str(text), True, Setting.WHITE)
+        draw_text = self.font.render(str(text), True, Setting.WHITE)
         textRectObj = draw_text.get_rect()
-        textRectObj.center = (self.position[0]+100, self.position[1]+80)
+        textRectObj = (self.position[0]+50, self.position[1]+50)
         Setting.windowSurface.blit(draw_text, textRectObj)
+        
         

@@ -7,7 +7,7 @@ from pygame.locals import *
 WINDOWWIDTH = 800
 WINDOWHEIGHT = 500
 windowSurface = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT), 0, 16)
-pygame.display.set_caption('과제하는 게임')
+pygame.display.set_caption('Thank you Professor')
 
 # Direction
 NORTH_DIRECTION = [0, -1]
@@ -66,3 +66,26 @@ boom_skill = pygame.image.load("Boomb_image.png")
 # UI Image
 health_bar_box = pygame.image.load("health-bar-box.png")
 health_bar =  pygame.image.load("health-bar.png")
+
+# Professor Said File open
+professor_said = open("ProfessorSaid.txt", 'r', encoding='UTF8')
+
+# pygame.init()
+# windowSurface.fill(WHITE)
+
+# font1 = pygame.font.SysFont("휴먼매직체",30)
+# # print('time needed for Font Creation : ', time.time() - t0)
+# img1 = font1.render('HELLO WOLRD! 안녕하세요!',True,BLUE)
+# windowSurface.blit(img1, (50,50))
+
+# pygame.display.update()
+
+ 
+# running = True
+ 
+# while running:
+#     for event in pygame.event.get():
+#         if event.type == pygame.QUIT:
+#             running = False
+ 
+# pygame.quit()

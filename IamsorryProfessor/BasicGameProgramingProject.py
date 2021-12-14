@@ -29,7 +29,8 @@ door_image = door_image2.get_image(0, 13, 48, 48, 1, (0, 0, 0))
 
 # Pygame Init
 pygame.init()
-basicFont = pygame.font.SysFont("NanumGothic.ttf", 32)
+# basicFont = pygame.font.SysFont("NanumGothic.ttf", 32)
+basicFont = pygame.font.SysFont("휴먼매직체",20)
 mainClock = pygame.time.Clock()
 
 stage_clear = False
@@ -41,20 +42,16 @@ game_screen = main_surface_image
 is_main_screen = True
 is_sub_screen = False
 
-quest1:bool = True # 뱀 잡아오는 quest # list로 만들면 좋을 듯
-quest2:bool = False # 벽돌 잡아오는 quest
-quest3:bool = False # 깃발 잡아오는 quest
-# quest4:bool = False
-quest5:bool = False # Professor quest
+quest1:bool = False
+quest2:bool = False
+quest3:bool = False
+quest4:bool = False
+quest5:bool = False
 
 skill_SB:bool = True # 기본 스킬
-# skill_E:bool = False # attract
-# skill_F:bool = False # attack
-# skill_R:bool = False # boom
-# skill_RMB:bool = False #shoot
 skill_E:bool = True # attract
-skill_F:bool = True # attack
-skill_R:bool = True # boom
+skill_F:bool = False # attack
+skill_R:bool = False # boom
 
 stage_num = 0
 
@@ -64,14 +61,14 @@ player_speed = 4
 player_stamina = 78
 character1_array = ConstructMap.make_player_sprite_array(Setting.player_image_base)
 player = ClassTemplate.Player(character1_array, player_position, player_trigger_size, player_speed, player_stamina, 1)
-num_caught_monster = [0, 0, 0]
-stage_clear_condition = [10, 10, 10]
+num_caught_monster = [0, 0, 0, 0]
+stage_clear_condition = [10, 10, 10, 10]
 
 professor_position = [400, 300] # Professor Init
-professor_trigger_size = 100
+professor_trigger_size = 150
 professor_speed = 2
-professor_stamina = 20
-professor_damage = 1
+professor_stamina = 100
+professor_damage = 5
 professor_npc_array = ConstructMap.make_professor_spite_array(Setting.professor_image_base, 2)
 professor_mon_array = ConstructMap.make_professor_spite_array(Setting.professor_image_base, 5)
 professor = ClassTemplate.Monster(professor_npc_array, professor_position, professor_trigger_size, professor_speed, professor_stamina, professor_damage)
@@ -109,13 +106,20 @@ Skill_R = ClassTemplate.SkillObject(boom_skill_image, door_position, 5)
 Skill_R_action = False
 
 # UI Setting
-message_box_image = pygame.transform.scale(Setting.message_box_image, (600, 200))
-ui1 = DrawGameUI.DrawMessageBox(message_box_image, basicFont, "Hello", [100, 250], 600, 300, 1)
-
 health_bar_box = DrawGameUI.DrawUI(Setting.health_bar_box, [10, 10], Setting.health_bar_box.get_width(), Setting.health_bar_box.get_height(), 3)
 health_bar = DrawGameUI.DrawUI(Setting.health_bar, [37, 19], Setting.health_bar_box.get_width(), Setting.health_bar_box.get_height(), 3)
 # health_bar.width랑 player.stamina랑 binding하면 딱인데,,
 
+text_file = DrawGameUI.GetTextFromFile(Setting.professor_said)
+said_list = text_file.line_list # Professor said list
+
+said_block = 0
+said_num = 0
+message_box_image = pygame.transform.scale(Setting.message_box_image, (600, 200))
+message_ui = DrawGameUI.DrawMessageBox(message_box_image, basicFont, "Hello", [100, 250], 600, 300, 1)
+
+tutorial = True
+monster_list = ConstructMap.make_monster(quest1_monster_type)
 # Game Loop
 while True:
     for event in pygame.event.get():
@@ -129,60 +133,78 @@ while True:
     #     # pygame.event.post(pygame.event.Event(USEREVENT, message="heymama"))
     #     pygame.time.set_timer(pygame.event.Event(USEREVENT, message="heymama"), 1000)
 
-
     # Stage setting
-    if (quest1 == True):
+    if quest1 == False and quest2 == False and quest4 == False and quest5 == False:
+        if tutorial == False:
+            quest1 = True
+
+    if quest1 == True:
         if stage_init == True:
             monster_list = ConstructMap.make_monster(quest1_monster_type)
             stage_init = False
             stage_clear = False
-        if num_caught_monster[stage_num] >= stage_clear_condition[stage_num] and stage_clear == True:# and 교수님 허락으로 인한 stage clear == True
+            said_block += 1
+            print("ah")
+        if stage_clear == True:
             quest1 = False
             quest2 = True
-            skill_F = True
-            stage_num += 1
-            stage_init = True
-            stage_clear = False
-    elif (quest2 == True):
-        if stage_init == True:
-            monster_list = ConstructMap.make_monster(quest3_monster_type)
-            stage_init = False
-            stage_clear = False
-        if num_caught_monster[stage_num] >= stage_clear_condition[stage_num] and stage_clear == True: # and 교수님 허락으로 인한 stage clear == True
-            quest2 = False
-            quest3 = True
             skill_R = True
             stage_num += 1
             stage_init = True
             stage_clear = False
-    elif (quest3 == True):
+            said_block += 1
+            print("stage 1 clear")
+    elif quest2 == True:
         if stage_init == True:
-            monster_list = ConstructMap.make_monster(quest1_monster_type) #
+            monster_list = ConstructMap.make_monster(quest3_monster_type)
             stage_init = False
             stage_clear = False
-        if num_caught_monster[stage_num] >= stage_clear_condition[stage_num] and stage_clear == True: # and 교수님 허락으로 인한 stage clear == True
-            quest3 = False
-            # quest4 = True
-            quest5 = True
-            # skill_RMB = True
+        if stage_clear == True:
+            quest2 = False
+            quest4 = True
+            # skill_R = True
             stage_num += 1
             stage_init = True
             stage_clear = False
+            said_block += 1
+            print("stage 2 clear")
+    # elif quest3 == True:
+    #     if stage_init == True:
+    #         monster_list = ConstructMap.make_monster(quest1_monster_type) #
+    #         stage_init = False
+    #         stage_clear = False
+    #     if stage_clear == True: # and 교수님 허락으로 인한 stage clear == True
+    #         quest3 = False
+    #         # quest4 = True
+    #         quest5 = True
+    #         # skill_RMB = True
+    #         stage_num += 1
+    #         stage_init = True
+    #         stage_clear = False
+    #         said_block += 1
+    #         print("stage 3 clear")
     # elif (quest4 == True):
-    elif (quest5 == True):
-        # 교수님을 몬스터로 바꿔주세요^^
-        is_professor_moster = True
-        # 교수님도 랜덤으로 움직이며
-        # Player를 공격하고
-        # 스페이스바와 연결된 UI 기능이 사라진다
-        professor.image_array = professor_mon_array
-        professor.triger_size = professor_trigger_size*4
-
-
+    elif quest4 == True:
+        if stage_init == True:
+            is_professor_moster = True
+            stage_init = False
+            stage_clear = False
+            professor.image_array = professor_mon_array
+            professor.triger_size = professor_trigger_size*4
+        if professor.stamina <= 0:
+            stage_clear = True
+            print("stage 3 clear")
         if stage_clear == True:
             is_professor_moster = False
+            professor.alive = True
+            said_block += 1
+            quest5 = True
             # Game End Code
-
+    elif quest5 == True:
+        professor.position = professor_position
+        professor.image_array = professor_npc_array
+        professor.triger_size = professor_trigger_size
+        Setting.windowSurface.blit(professor.now_image, professor.position)
 
     # professor.image_array = professor_mon_array
     # professor.triger_size = professor_trigger_size*4
@@ -209,17 +231,20 @@ while True:
         is_sub_screen = False
 
     # Professor의 동작
-    if is_professor_moster == False: # Monster로서 동작하지 않을 때에는 UI띄우기, Damage도 안먹음
+    if is_professor_moster == False:
         if player.is_collided_with(professor) and pressed[pygame.K_SPACE] and professor.alive == True:
-            ui1.is_draw = True
+            message_ui.is_draw = True
+            if num_caught_monster[stage_num] >= stage_clear_condition[stage_num]:
+                stage_clear = True
+
         elif player.is_collided_with(professor) == False:
-            ui1.is_draw = False
+            message_ui.is_draw = False
     else: # Monster로 동작하는 경우
         if player.is_collided_with(professor):
             professor.attracted(player)
             monster_list[0] = professor
         
-    # # Keyboard pressed
+    # Keyboard pressed
     if pressed[pygame.K_w]:
         player.transform_position(Setting.key_input[pygame.K_w])
     elif pressed[pygame.K_s]:
@@ -272,11 +297,7 @@ while True:
             if monster_alive == False:
                 num_caught_monster[stage_num] += 1
 
-    if professor.alive == True and game_screen == game_main_screen:
-        if player.is_collided_with(professor):
-            stage_clear = True
-            print(stage_num)
-    
+
     # Surface Draw
     Setting.windowSurface.fill(Setting.WHITE)
     Setting.windowSurface.blit(game_screen, (0, 0))
@@ -315,31 +336,25 @@ while True:
 
     Setting.windowSurface.blit(player.now_image, player.position)
 
-    # print(stage_num)
-    # print(num_caught_monster[stage_num])
-
     # UI rendering
     health_bar.draw_cut_image(player.stamina)
     Setting.windowSurface.blit(health_bar_box.now_image, health_bar_box.position)
     Setting.windowSurface.blit(health_bar.now_image, health_bar.position)
 
-    # Setting.windowSurface.blit(quest3_monster_image_list[0], professor.position)
-
     # DrawGamdUI(message_box_image, basicFont, "Hello", [200, 200], 100, 100)
-    if ui1.is_draw == True:
-        ui1.draw_message()
+    if message_ui.is_draw == True:
+        if said_list[said_block][said_num] != 0:
+            message_ui.draw_message(said_list[said_block][said_num])
+            pygame.time.wait(150)
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                said_num += 1
+        else:
+            message_ui.is_draw = False
+            said_num = 0
+            tutorial = False
+    
 
     pygame.display.update()
     mainClock.tick(50)
-    # set_colorkey((56, 56, 94)) .convert_alpha().set_colorkey((255, 0, 255))
-
-    # 교수님한테 가까이 가서 sb누르면 pygame ui 뜨게
-    # ui는 text파일 순서대로 읽어오도록
-    # 교수님 monster 동작
-    # moster 공격 시 attack image
 
     # Map Image만들기
-    # UI로 player 체력 바 추가
-    # Monster position위에도 체력 바 하나씩 달아주기
-
-    # 튜토리얼과 게임 설명
