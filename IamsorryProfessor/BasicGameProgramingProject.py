@@ -1,5 +1,7 @@
+from typing import Set
 import pygame, sys
 from pygame.locals import *
+import random
 import Setting
 import ClassTemplate
 import ConstructMap
@@ -65,7 +67,7 @@ num_caught_monster = [0, 0, 0]
 stage_clear_condition = [10, 10, 10]
 
 professor_position = [300, 300] # Professor Init
-professor_trigger_size = 200
+professor_trigger_size = 100
 professor_speed = 2
 professor_stamina = 20
 professor_damage = 1
@@ -79,18 +81,27 @@ door_to_sub_screen = ClassTemplate.TriggerObject(ConstructMap.make_skill_object_
 
 monster_num = 10
 # monster_list = [range(10)] # 10칸짜리 list
-quest1_monster_type = [ConstructMap.make_skill_object_sprite_array(Setting.snake_image, 1), professor_trigger_size, professor_speed, professor_stamina, professor_damage]
+quest1_monster_stamina = 5
+quest1_monster_damage = 1
+quest1_monster_image_list = ConstructMap.make_monster_spite_array(Setting.snake_image)
+quest1_monster_type = [quest1_monster_image_list, professor_trigger_size, professor_speed, quest1_monster_stamina, quest1_monster_damage]
 # quest2_monster_type = [image, trigger_size, speed, stamina, damage]
 # quest3_monster_type = [image, trigger_size, speed, stamina, damage]
 # quest4_monster_type = [image, trigger_size, speed, stamina, damage]
 
-apple_trigger_size = 50
+apple_trigger_size = 80
 skill_E_apple = ClassTemplate.SkillObject(ConstructMap.make_skill_object_sprite_array(Setting.apple_image, 2), door_position, apple_trigger_size)
 boom_trigger_size = 30
 skill_R_boom = ClassTemplate.SkillObject(ConstructMap.make_skill_object_sprite_array(Setting.boom_image, 2), door_position, boom_trigger_size)
 
 message_box_image = pygame.transform.scale(Setting.message_box_image, (600, 200))
 ui1 = DrawGameUI.DrawMessageBox(message_box_image, basicFont, "Hello", [100, 250], 600, 300)
+
+# make skill image
+skill_SB_image = ConstructMap.make_skill_SB_sprite_array(Setting.base_skill, 2)
+Skill_SB = ClassTemplate.SkillObject(skill_SB_image, door_position, 5)
+boom_skill_image = ConstructMap.make_skill_R_sprite_array(Setting.boom_skill, 1)
+Skill_R = ClassTemplate.SkillObject(boom_skill_image, door_position, 5)
 
 
 # Game Loop
@@ -197,8 +208,12 @@ while True:
     for i in range(monster_num):
         if monster_list[i].is_collided_with(player) and pressed[pygame.K_SPACE]:
             monster_alive = monster_list[i].lose_stamina(player.damage)
+            Skill_SB.alive = True
+            Skill_SB.position = [player.position[0]+ player.direction[0]*40, player.position[1] + player.direction[1]*40]
             if monster_alive == False:
                 num_caught_monster[stage_num] += 1
+    if Skill_SB.alive:
+        Skill_SB.play_skill()
     # Skill_E
     if pressed[pygame.K_e] and skill_E == True and skill_E_apple.alive == False: # 지금은 사과 하나만 만들 수 있음
         skill_E_apple.make_new_postion(player.position[0], player.position[1])
@@ -231,26 +246,33 @@ while True:
     if game_screen == game_sub_screen:
         for i in range(monster_num):
             if monster_list[i].alive == False:
-                monster_list[i].alive = True
                 monster_list[i].refresh_monster()
-            Setting.windowSurface.blit(monster_list[i].now_image, monster_list[i].position)
+            else:
+                monster_list[i].transform_position_randomly()
+                Setting.windowSurface.blit(monster_list[i].now_image, monster_list[i].position)
     elif game_screen == game_main_screen:
         if professor.alive == True:
-            Setting.windowSurface.blit(professor.now_image, professor.position)
+            # Setting.windowSurface.blit(professor.now_image, professor.position)
+            pass
 
     if skill_E_apple.alive == True:
         Setting.windowSurface.blit(skill_E_apple.now_image, skill_E_apple.position)
         skill_E_apple.existence_countdown()
     if skill_R_boom.alive == True:
         Setting.windowSurface.blit(skill_R_boom.now_image, skill_R_boom.position)
-        skill_R_boom.existence_countdown()
+        skill_R_boom.existence_countdown(Skill_R)
+
+    if Skill_SB.alive == True:
+        Setting.windowSurface.blit(Skill_SB.now_image, Skill_SB.position)
+    if Skill_R.alive == True:
+        Setting.windowSurface.blit(Skill_R.now_image, Skill_R.position)
 
     Setting.windowSurface.blit(player.now_image, player.position)
 
     # print(stage_num)
     # print(num_caught_monster[stage_num])
 
-    # Setting.windowSurface.blit(skill_E_apple.now_image, player.position)
+    # Setting.windowSurface.blit(Setting.boom_skill, professor.position)
 
     # DrawGamdUI(message_box_image, basicFont, "Hello", [200, 200], 100, 100)
     if ui1.is_draw == True:
@@ -260,7 +282,6 @@ while True:
     mainClock.tick(50)
     # set_colorkey((56, 56, 94)) .convert_alpha().set_colorkey((255, 0, 255))
 
-    # character image 고치기//
     # 교수님한테 가까이 가서 sb누르면 pygame ui 뜨게
     # ui는 text파일 순서대로 읽어오도록
     # 교수님 monster 동작
@@ -268,14 +289,5 @@ while True:
     # Map Image만들기
     # UI로 player 체력 바 추가
     # Monster position위에도 체력 바 하나씩 달아주기
-    # 교수님이 막 뱀, 벽돌 등의 몬스터를 만들어서 뿌림ㅋㅋ
 
-    # 메인 화면
     # 튜토리얼과 게임 설명
-    # Map Image에서 벽에 충돌 안하게
-    # 게임 일시정지 기능
-    # Player 이름 받아서 화면에 써주는 기능
-
-    # 하 아예 방을 세개 만들어서 다시 들어가서 뱀을 잡으면 복습하는 의미로 알고 성적 올려주는 그런 이스터에그 있으면 좋을텐데
-    # 시간이 없네
-    # 종강하고 추가해볼까

@@ -14,12 +14,18 @@ EAST_DIRECTION = Setting.EAST_DIRECTION
 # get mini item image
 class SpriteSheet():
     def __init__(self, image):
-        self.sheet = image
+        self.sheet = image.convert_alpha()
     
     def get_image(self, num_x, num_y, width, height, scale, color):
-        image = pygame.Surface((width, height))
+        image = pygame.Surface((width, height), pygame.SRCALPHA)
         image.blit(self.sheet, (0, 0), Rect((num_x*width), (num_y*height), width, height))
         image = pygame.transform.scale(image, (width*scale, height* scale))
+        return image
+
+    def get_small_image(self, num_x, num_y, width, height, scale, color):
+        image = pygame.Surface((width, height), pygame.SRCALPHA)
+        image.blit(self.sheet, (0, 0), Rect((num_x*width), (num_y*height), width, height))
+        image = pygame.transform.scale(image, (int(width/scale), int(height/scale)))
         return image
 
 
@@ -50,32 +56,40 @@ class Character(TriggerObject):
         self.stamina = stamina
         self.fix_stamina = stamina
         self.damage = damage
+        self.direction = NORTH_DIRECTION
         self.alive = True
+
+        self.count_max = len(self.image_array)*2
+        self.move_count = 0
 
         self.now_image = self.image_array[0]
 
     def transform_position(self, direction): # direction = [ , ]
         count = int(len(self.image_array)/4)
+        if self.move_count >= self.count_max:
+            self.move_count = 0
+
         if direction == NORTH_DIRECTION:
-            self.now_image = self.image_array[0*count]
+            self.direction = NORTH_DIRECTION
+            self.now_image = self.image_array[0*count + self.move_count//(4*2)]
             if  self.position[1] - self.speed > 0:
                 self.position[1] += direction[1]*self.speed
-
         elif direction == SOUTH_DIRECTION:
-            self.now_image = self.image_array[1*count]
+            self.direction = SOUTH_DIRECTION
+            self.now_image = self.image_array[1*count+self.move_count//(4*2)]
             if self.position[1] + self.speed < Setting.WINDOWHEIGHT - self.triger_size:
                 self.position[1] += direction[1]*self.speed
-
         elif direction == WEST_DIRECTION:
-            self.now_image = self.image_array[2*count]
+            self.direction = WEST_DIRECTION
+            self.now_image = self.image_array[2*count+self.move_count//(4*2)]
             if  self.position[0] + direction[0]*self.speed > 0:
                 self.position[0] += direction[0]*self.speed
-
         elif direction == EAST_DIRECTION:
-            self.now_image = self.image_array[3*count]
+            self.direction = EAST_DIRECTION
+            self.now_image = self.image_array[3*count+self.move_count//(4*2)]
             if self.position[0] +  direction[0]*self.speed < Setting.WINDOWWIDTH - self.triger_size:
                 self.position[0] += direction[0]*self.speed
-
+        self.move_count += 1
         # self.now_image.set_colorkey((255, 0, 255))
 
     def lose_stamina(self, other_damage):
@@ -98,6 +112,11 @@ class Player(Character):
 class Monster(Character):
     def __init__(self, image_array, position, triger_size, speed, stamina, damage):
         super().__init__(image_array, position, triger_size, speed, stamina, damage)
+        self.time_delay = 100
+        self.time_count = 0
+        i = random.randint(0, 3)
+        self.direction = Setting.key_input_list[i]
+
 
     # def move_randomly(self):
     #     self.transform_position(NORTH_DIRECTION)
@@ -117,10 +136,24 @@ class Monster(Character):
                 
 
     def refresh_monster(self):
-        self.stamina = self.fix_stamina
-        position0 = random.randrange(100, 700)
-        position1 = random.randrange(100, 400)
-        self.position = [position0, position1]
+        if self.time_count >= self.time_delay:
+            self.time_count = 0
+            self.stamina = self.fix_stamina
+            self.alive = True
+            position0 = random.randrange(100, 700)
+            position1 = random.randrange(100, 400)
+            self.position = [position0, position1]
+        self.time_count += 1
+
+    def transform_position_randomly(self):
+        if self.time_count >= self.time_delay:
+            self.time_count = 0
+            i = random.randint(0, 3)
+            self.direction = Setting.key_input_list[i]
+        self.time_count += 1
+        self.transform_position(self.direction)
+        # if self.direction == NORTH_DIRECTION:
+        #     self.position[1] -= self.direction[1]*self.speed
 
 
 
@@ -131,12 +164,26 @@ class SkillObject(TriggerObject):
         self.start_ticks = pygame.time.get_ticks()
         self.elapsed_time = (pygame.time.get_ticks() - self.start_ticks) / 1000
 
+        self.count_max = len(self.image_array) # 5
+        self.move_count = 0
+
     def make_new_postion(self, x, y):
         self.position = [x, y]
         self.start_ticks = pygame.time.get_ticks()
 
-    def existence_countdown(self):
+    def existence_countdown(self, other):
         self.elapsed_time = (pygame.time.get_ticks() - self.start_ticks) / 1000
         # print(self.elapsed_time)
         if self.elapsed_time > 3:
             self.alive = False
+            if other != None:
+                other.position = self.position
+                other.alive = True
+                other.play_skill()
+
+    def play_skill(self):
+        if self.move_count +1 == 25:
+            self.move_count = 0
+            self.alive = False
+        self.now_image = self.image_array[self.move_count // self.count_max]
+        self.move_count += 1

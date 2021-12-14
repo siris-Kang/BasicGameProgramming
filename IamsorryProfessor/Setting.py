@@ -17,6 +17,7 @@ EAST_DIRECTION = [1, 0]
 
 # Key input
 key_input = { pygame.K_w: NORTH_DIRECTION, pygame.K_s: SOUTH_DIRECTION, pygame.K_a: WEST_DIRECTION, pygame.K_d:EAST_DIRECTION}
+key_input_list = [NORTH_DIRECTION, SOUTH_DIRECTION, WEST_DIRECTION, EAST_DIRECTION]
 
 # Color
 BLACK = (0, 0, 0)
@@ -47,12 +48,15 @@ door_image = pygame.image.load("MapImage2.png")
 message_box_image = pygame.image.load("health-bar.png")
 
 # Monster Image
-snake_image = pygame.image.load("snake.png")
+snake_image = pygame.image.load("snake3.png")
 
 
 # SKill Image
 apple_image = pygame.image.load("apple.png")
 boom_image = pygame.image.load("fireball.png")
+
+base_skill = pygame.image.load("base_skill.png")
+boom_skill = pygame.image.load("Boomb_image.png")
 
 # # Font
 # pygame.init()
