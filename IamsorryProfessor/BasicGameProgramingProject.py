@@ -10,8 +10,6 @@ import DrawGameUI
 # Set Window
 WINDOWWIDTH = Setting.WINDOWWIDTH
 WINDOWHEIGHT = Setting.WINDOWHEIGHT
-# windowSurface = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT), 0, 16)
-# pygame.display.set_caption('과제하는 게임')
 
 # Set Direction
 NORTH_DIRECTION = Setting.NORTH_DIRECTION
@@ -27,14 +25,6 @@ stage2_surface_image = Setting.stage2_surface_image
 door_image2 = ClassTemplate.SpriteSheet(Setting.door_image)
 door_image = door_image2.get_image(0, 13, 48, 48, 1, (0, 0, 0))
 
-# Pygame Init
-# pygame.init()
-# # basicFont = pygame.font.SysFont("NanumGothic.ttf", 32)
-# basicFont = pygame.font.SysFont("휴먼매직체",20)
-# mainClock = pygame.time.Clock()
-
-# hit_sound = pygame.mixer.Sound("hit_sound.mp3")
-
 stage_clear = False
 stage_init = True
 
@@ -47,13 +37,13 @@ is_sub_screen = False
 quest1:bool = False
 quest2:bool = False
 quest3:bool = False
-quest4:bool = True
+quest4:bool = False
 quest5:bool = False
 
 skill_SB:bool = True # 기본 스킬
 skill_E:bool = True # attract
 skill_F:bool = False # attack
-skill_R:bool = True # boom
+skill_R:bool = False # boom
 
 stage_num = 0
 
@@ -82,18 +72,16 @@ door_to_sub_screen = ClassTemplate.TriggerObject(ConstructMap.make_skill_object_
 
 monster_num = 10
 monster_trigger_size = 80
-# monster_list = [range(10)] # 10칸짜리 list
+
 quest1_monster_stamina = 7
 quest1_monster_damage = 1
 quest1_monster_image_list = ConstructMap.make_monster_spite_array(Setting.snake_image)
 quest1_monster_type = [quest1_monster_image_list, monster_trigger_size, 3, quest1_monster_stamina, quest1_monster_damage]
-# quest2_monster_type = [image, trigger_size, speed, stamina, damage]
+
 quest3_monster_stamina = 14
 quest3_monster_damage = 3
 quest3_monster_image_list = ConstructMap.make_flag_monster_spite_array(Setting.flag_image)
 quest3_monster_type = [quest3_monster_image_list, monster_trigger_size, 1, quest1_monster_stamina, quest1_monster_damage]
-# quest3_monster_type = [image, trigger_size, speed, stamina, damage]
-# quest4_monster_type = [image, trigger_size, speed, stamina, damage]
 
 apple_trigger_size = 100
 skill_E_apple = ClassTemplate.SkillObject(ConstructMap.make_skill_object_sprite_array(Setting.apple_image, 2), door_position, apple_trigger_size)
@@ -110,7 +98,6 @@ Skill_R_action = False
 # UI Setting
 health_bar_box = DrawGameUI.DrawUI(Setting.health_bar_box, [10, 10], Setting.health_bar_box.get_width(), Setting.health_bar_box.get_height(), 3)
 health_bar = DrawGameUI.DrawUI(Setting.health_bar, [37, 19], Setting.health_bar_box.get_width(), Setting.health_bar_box.get_height(), 3)
-# health_bar.width랑 player.stamina랑 binding하면 딱인데,,
 
 text_file = DrawGameUI.GetTextFromFile(Setting.professor_said)
 said_list = text_file.line_list # Professor said list
@@ -132,10 +119,6 @@ while True:
             sys.exit()
         elif event.type == USEREVENT:
             print(event.message)
-    # pressed = pygame.key.get_pressed()
-    # if pressed[pygame.K_p]:
-    #     # pygame.event.post(pygame.event.Event(USEREVENT, message="heymama"))
-    #     pygame.time.set_timer(pygame.event.Event(USEREVENT, message="heymama"), 1000)
 
     # Stage setting
     if quest1 == False and quest2 == False and quest4 == False and quest5 == False:
@@ -148,7 +131,6 @@ while True:
             stage_init = False
             stage_clear = False
             said_block += 1
-            print("ah")
         if stage_clear == True:
             quest1 = False
             quest2 = True
@@ -157,7 +139,6 @@ while True:
             stage_init = True
             stage_clear = False
             said_block += 1
-            print("stage 1 clear")
     elif quest2 == True:
         if stage_init == True:
             monster_list = ConstructMap.make_monster(quest3_monster_type)
@@ -172,23 +153,6 @@ while True:
             stage_init = True
             stage_clear = False
             said_block += 1
-            print("stage 2 clear")
-    # elif quest3 == True:
-    #     if stage_init == True:
-    #         monster_list = ConstructMap.make_monster(quest1_monster_type) #
-    #         stage_init = False
-    #         stage_clear = False
-    #     if stage_clear == True: # and 교수님 허락으로 인한 stage clear == True
-    #         quest3 = False
-    #         # quest4 = True
-    #         quest5 = True
-    #         # skill_RMB = True
-    #         stage_num += 1
-    #         stage_init = True
-    #         stage_clear = False
-    #         said_block += 1
-    #         print("stage 3 clear")
-    # elif (quest4 == True):
     elif quest4 == True:
         if stage_init == True:
             is_professor_moster = True
@@ -198,25 +162,22 @@ while True:
             professor.triger_size = professor_trigger_size*4
         if professor.stamina <= 0:
             stage_clear = True
-            print("stage 3 clear")
         if stage_clear == True:
             is_professor_moster = False
-            professor.alive = True
             said_block += 1
             quest5 = True
             quest4 = False
     elif quest5 == True:
+        professor.alive = True
+        professor.stamina = 10
         professor.position = professor_position
         professor.image_array = professor_npc_array
         professor.triger_size = professor_trigger_size
         Setting.windowSurface.blit(professor.now_image, professor.position)
         # Game End
 
-    # professor.image_array = professor_mon_array
-    # professor.triger_size = professor_trigger_size*4
-    # if player.is_collided_with(professor):
-    #     professor.attracted(player)
-    #     monster_list[0] = professor
+    if player.stamina <= 0:
+        player.stamina = player_stamina
 
     pressed = pygame.key.get_pressed()
 
@@ -364,5 +325,3 @@ while True:
 
     pygame.display.update()
     Setting.mainClock.tick(50)
-
-    # Map Image만들기

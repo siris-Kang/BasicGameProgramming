@@ -30,12 +30,7 @@ GRAY = (100,100,100)
 
 # Image Load
 player_image_base = pygame.image.load("Character1.png")
-# character1.set_colorkey(ClassTemplate.BLACK)
-# character1.set_alpha(128)
-# print(character1.get_alpha(), character1.get_colorkey())
-# player = pygame.transform.scale(character1, (50, 50))
 professor_image_base = pygame.image.load("Character2.png")
-# professor_mon_image_base = pygame.image.load("Character2.png")
 
 # Background Image Load
 professor_lab = pygame.image.load("professor_lab.png")
@@ -61,10 +56,6 @@ boom_image = pygame.image.load("Bomb.png")
 base_skill = pygame.image.load("base_skill.png")
 boom_skill = pygame.image.load("Boomb_image.png")
 
-# # Font
-# pygame.init()
-# font = pygame.font.SysFont("NanumGothic.ttf", 32)
-
 # UI Image
 health_bar_box = pygame.image.load("health-bar-box.png")
 health_bar =  pygame.image.load("health-bar.png")
@@ -72,11 +63,7 @@ health_bar =  pygame.image.load("health-bar.png")
 # Professor Said File open
 professor_said = open("ProfessorSaid.txt", 'r', encoding='UTF8')
 
-# Sound
-# hit_sound = pygame.mixer.Sound("hit_sound.mp3")
-
 pygame.init()
-# basicFont = pygame.font.SysFont("NanumGothic.ttf", 32)
 basicFont = pygame.font.SysFont("휴먼매직체",20)
 mainClock = pygame.time.Clock()
 
@@ -84,24 +71,3 @@ start_sound = pygame.mixer.Sound("start_sound.flac")
 hit_sound = pygame.mixer.Sound("hit_sound.flac")
 monster_attack_sound = hit_sound = pygame.mixer.Sound("monster_attack_sound.flac")
 bomb_sound = pygame.mixer.Sound("bomb_sound.wav")
-
-# pygame.init()
-# windowSurface.fill(WHITE)
-
-# font1 = pygame.font.SysFont("휴먼매직체",30)
-# # print('time needed for Font Creation : ', time.time() - t0)
-# img1 = font1.render('HELLO WOLRD! 안녕하세요!',True,BLUE)
-# windowSurface.blit(img1, (50,50))
-# hit_sound.play()
-
-# pygame.display.update()
-
- 
-# running = True
- 
-# while running:
-#     for event in pygame.event.get():
-#         if event.type == pygame.QUIT:
-#             running = False
- 
-# pygame.quit()

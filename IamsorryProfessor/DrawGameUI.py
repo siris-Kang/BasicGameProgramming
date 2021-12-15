@@ -9,7 +9,7 @@ class GetTextFromFile:
         self.line_list = self.divide_lines_to_list(self.line)
     
     def divide_lines_to_list(self, lines):
-        line_list = [[0] * 9 for _ in range(9)] # 동적할당 하면 좋을텐데
+        line_list = [[0] * 9 for _ in range(9)]
         count_block = 0
         count_line = 0
         for line in lines:
@@ -21,16 +21,8 @@ class GetTextFromFile:
                 count_line = 0
         return line_list
 
-
-# file_name = open("ProfessorSaid.txt", 'r', encoding='UTF8')
-# text_file = GetTextFromFile(file_name)
-# for i in text_file.line_list:
-#     print(i)
-
-
 class DrawUI:
     def __init__(self, image, position, width, height, scale):
-        # self.image = pygame.transform.scale(image, (image.get_width()*scale, image.get_height()* scale))
         self.image = image
         self.sheet = ClassTemplate.SpriteSheet(self.image)
         self.position = position

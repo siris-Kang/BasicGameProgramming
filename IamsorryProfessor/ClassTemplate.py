@@ -90,7 +90,6 @@ class Character(TriggerObject):
             if self.position[0] + 50 < Setting.WINDOWWIDTH - self.triger_size:
                 self.position[0] += direction[0]*self.speed
         self.move_count += 1
-        # self.now_image.set_colorkey((255, 0, 255))
 
     def lose_stamina(self, other_damage):
         self.stamina -= other_damage
@@ -119,14 +118,11 @@ class Monster(Character):
         i = random.randint(0, 3)
         self.direction = Setting.key_input_list[i]
 
-
-    # def move_randomly(self):
-    #     self.transform_position(NORTH_DIRECTION)
     
     def attracted(self, other = None): #다른 물체에 이끌림
         position0 = self.position[0] - other.position[0]
         position1 = self.position[1] - other.position[1]
-        # if abs(position0) > self.speed or abs(position1) > self.speed:
+
         if position1 > self.speed:
             self.transform_position(NORTH_DIRECTION)
         elif position1 < -self.speed:
@@ -153,8 +149,6 @@ class Monster(Character):
             self.direction = Setting.key_input_list[i]
         self.time_count_position += 1
         self.transform_position(self.direction)
-        # if self.direction == NORTH_DIRECTION:
-        #     self.position[1] -= self.direction[1]*self.speed
 
     def attack(self, other):
         if self.time_count_attack >= 50:
