@@ -22,16 +22,18 @@ EAST_DIRECTION = Setting.EAST_DIRECTION
 # Load Image
 main_surface_image = Setting.main_surface_image
 stage1_surface_image = Setting.stage1_surface_image
-
+stage2_surface_image = Setting.stage2_surface_image
 
 door_image2 = ClassTemplate.SpriteSheet(Setting.door_image)
 door_image = door_image2.get_image(0, 13, 48, 48, 1, (0, 0, 0))
 
 # Pygame Init
-pygame.init()
-# basicFont = pygame.font.SysFont("NanumGothic.ttf", 32)
-basicFont = pygame.font.SysFont("휴먼매직체",20)
-mainClock = pygame.time.Clock()
+# pygame.init()
+# # basicFont = pygame.font.SysFont("NanumGothic.ttf", 32)
+# basicFont = pygame.font.SysFont("휴먼매직체",20)
+# mainClock = pygame.time.Clock()
+
+# hit_sound = pygame.mixer.Sound("hit_sound.mp3")
 
 stage_clear = False
 stage_init = True
@@ -45,13 +47,13 @@ is_sub_screen = False
 quest1:bool = False
 quest2:bool = False
 quest3:bool = False
-quest4:bool = False
+quest4:bool = True
 quest5:bool = False
 
 skill_SB:bool = True # 기본 스킬
 skill_E:bool = True # attract
 skill_F:bool = False # attack
-skill_R:bool = False # boom
+skill_R:bool = True # boom
 
 stage_num = 0
 
@@ -74,26 +76,26 @@ professor_mon_array = ConstructMap.make_professor_spite_array(Setting.professor_
 professor = ClassTemplate.Monster(professor_npc_array, professor_position, professor_trigger_size, professor_speed, professor_stamina, professor_damage)
 is_professor_moster = False
 
-door_position = [0, 200]
+door_position = [40, 200]
 door_trigger_size = 50
 door_to_sub_screen = ClassTemplate.TriggerObject(ConstructMap.make_skill_object_sprite_array(door_image, 1), door_position, door_trigger_size)
 
 monster_num = 10
 monster_trigger_size = 80
 # monster_list = [range(10)] # 10칸짜리 list
-quest1_monster_stamina = 5
+quest1_monster_stamina = 7
 quest1_monster_damage = 1
 quest1_monster_image_list = ConstructMap.make_monster_spite_array(Setting.snake_image)
 quest1_monster_type = [quest1_monster_image_list, monster_trigger_size, 3, quest1_monster_stamina, quest1_monster_damage]
 # quest2_monster_type = [image, trigger_size, speed, stamina, damage]
-quest3_monster_stamina = 7
+quest3_monster_stamina = 14
 quest3_monster_damage = 3
 quest3_monster_image_list = ConstructMap.make_flag_monster_spite_array(Setting.flag_image)
 quest3_monster_type = [quest3_monster_image_list, monster_trigger_size, 1, quest1_monster_stamina, quest1_monster_damage]
 # quest3_monster_type = [image, trigger_size, speed, stamina, damage]
 # quest4_monster_type = [image, trigger_size, speed, stamina, damage]
 
-apple_trigger_size = 80
+apple_trigger_size = 100
 skill_E_apple = ClassTemplate.SkillObject(ConstructMap.make_skill_object_sprite_array(Setting.apple_image, 2), door_position, apple_trigger_size)
 boom_trigger_size = 30
 skill_R_boom = ClassTemplate.SkillObject(ConstructMap.make_skill_object_sprite_array(Setting.boom_image, 1), door_position, boom_trigger_size)
@@ -116,10 +118,12 @@ said_list = text_file.line_list # Professor said list
 said_block = 0
 said_num = 0
 message_box_image = pygame.transform.scale(Setting.message_box_image, (600, 200))
-message_ui = DrawGameUI.DrawMessageBox(message_box_image, basicFont, "Hello", [100, 250], 600, 300, 1)
+message_ui = DrawGameUI.DrawMessageBox(message_box_image, Setting.basicFont, "Hello", [100, 250], 600, 300, 1)
 
 tutorial = True
 monster_list = ConstructMap.make_monster(quest1_monster_type)
+
+Setting.start_sound.play()
 # Game Loop
 while True:
     for event in pygame.event.get():
@@ -157,6 +161,7 @@ while True:
     elif quest2 == True:
         if stage_init == True:
             monster_list = ConstructMap.make_monster(quest3_monster_type)
+            game_sub_screen = stage2_surface_image
             stage_init = False
             stage_clear = False
         if stage_clear == True:
@@ -199,12 +204,13 @@ while True:
             professor.alive = True
             said_block += 1
             quest5 = True
-            # Game End Code
+            quest4 = False
     elif quest5 == True:
         professor.position = professor_position
         professor.image_array = professor_npc_array
         professor.triger_size = professor_trigger_size
         Setting.windowSurface.blit(professor.now_image, professor.position)
+        # Game End
 
     # professor.image_array = professor_mon_array
     # professor.triger_size = professor_trigger_size*4
@@ -217,15 +223,15 @@ while True:
     # Main map and Sub map setting
     if door_to_sub_screen.is_collided_with(player) and is_main_screen and pressed[pygame.K_SPACE]:
         game_screen = game_sub_screen
-        door_to_sub_screen.position = [750, 200]
-        player.position = [710, 200]
+        door_to_sub_screen.position = [710, 200]
+        player.position = [670, 200]
         professor.alive = False
         is_main_screen = False
         is_sub_screen = True
     elif door_to_sub_screen.is_collided_with(player) and is_sub_screen and pressed[pygame.K_SPACE]:
         game_screen = game_main_screen
-        door_to_sub_screen.position = [0, 200]
-        player.position = [50, 200]
+        door_to_sub_screen.position = [40, 200]
+        player.position = [90, 200]
         professor.alive = True
         is_main_screen = True
         is_sub_screen = False
@@ -245,14 +251,14 @@ while True:
             monster_list[0] = professor
         
     # Keyboard pressed
-    if pressed[pygame.K_w]:
-        player.transform_position(Setting.key_input[pygame.K_w])
-    elif pressed[pygame.K_s]:
-        player.transform_position(Setting.key_input[pygame.K_s])
-    elif pressed[pygame.K_a]:
-        player.transform_position(Setting.key_input[pygame.K_a])
-    elif pressed[pygame.K_d]:
-        player.transform_position(Setting.key_input[pygame.K_d])
+    if pressed[pygame.K_UP]:
+        player.transform_position(Setting.key_input[pygame.K_UP])
+    elif pressed[pygame.K_DOWN]:
+        player.transform_position(Setting.key_input[pygame.K_DOWN])
+    elif pressed[pygame.K_LEFT]:
+        player.transform_position(Setting.key_input[pygame.K_LEFT])
+    elif pressed[pygame.K_RIGHT]:
+        player.transform_position(Setting.key_input[pygame.K_RIGHT])
 
 
     # monster의 일반 동작
@@ -266,7 +272,7 @@ while True:
     # Skill
     # Skill_SB
     for i in range(monster_num):
-        if monster_list[i].is_collided_with(player) and pressed[pygame.K_SPACE]:
+        if monster_list[i].is_collided_with(player) and pressed[pygame.K_q]:
             monster_alive = monster_list[i].lose_stamina(player.damage)
             Skill_SB.alive = True
             Skill_SB.position = [player.position[0]+ player.direction[0]*40, player.position[1] + player.direction[1]*40]
@@ -274,6 +280,7 @@ while True:
                 num_caught_monster[stage_num] += 1
     if Skill_SB.alive:
         Skill_SB.play_skill()
+        Setting.hit_sound.play()
     # Skill_E
     if pressed[pygame.K_e] and skill_E == True and skill_E_apple.alive == False: # 지금은 사과 하나만 만들 수 있음
         skill_E_apple.make_new_postion(player.position[0], player.position[1])
@@ -328,6 +335,7 @@ while True:
             Skill_R.alive = True
     if Skill_R.alive == True and Skill_R_action == True:
         Skill_R.play_skill()
+        Setting.bomb_sound.play()
 
     if Skill_SB.alive == True:
         Setting.windowSurface.blit(Skill_SB.now_image, Skill_SB.position)
@@ -355,6 +363,6 @@ while True:
     
 
     pygame.display.update()
-    mainClock.tick(50)
+    Setting.mainClock.tick(50)
 
     # Map Image만들기

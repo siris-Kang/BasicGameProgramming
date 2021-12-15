@@ -72,22 +72,22 @@ class Character(TriggerObject):
         if direction == NORTH_DIRECTION:
             self.direction = NORTH_DIRECTION
             self.now_image = self.image_array[0*count + self.move_count//(4*2)]
-            if  self.position[1] - self.speed > 0:
+            if  self.position[1] - 50 > 0:
                 self.position[1] += direction[1]*self.speed
         elif direction == SOUTH_DIRECTION:
             self.direction = SOUTH_DIRECTION
             self.now_image = self.image_array[1*count+self.move_count//(4*2)]
-            if self.position[1] + self.speed < Setting.WINDOWHEIGHT - self.triger_size:
+            if self.position[1] + 50 < Setting.WINDOWHEIGHT - self.triger_size:
                 self.position[1] += direction[1]*self.speed
         elif direction == WEST_DIRECTION:
             self.direction = WEST_DIRECTION
             self.now_image = self.image_array[2*count+self.move_count//(4*2)]
-            if  self.position[0] + direction[0]*self.speed > 0:
+            if  self.position[0] - 50 > 0:
                 self.position[0] += direction[0]*self.speed
         elif direction == EAST_DIRECTION:
             self.direction = EAST_DIRECTION
             self.now_image = self.image_array[3*count+self.move_count//(4*2)]
-            if self.position[0] +  direction[0]*self.speed < Setting.WINDOWWIDTH - self.triger_size:
+            if self.position[0] + 50 < Setting.WINDOWWIDTH - self.triger_size:
                 self.position[0] += direction[0]*self.speed
         self.move_count += 1
         # self.now_image.set_colorkey((255, 0, 255))
@@ -160,6 +160,7 @@ class Monster(Character):
         if self.time_count_attack >= 50:
             self.time_count_attack = 0
             other.lose_stamina(self.damage)
+            Setting.monster_attack_sound.play()
         self.time_count_attack += 1
 
 

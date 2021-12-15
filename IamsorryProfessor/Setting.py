@@ -16,7 +16,7 @@ WEST_DIRECTION = [-1, 0]
 EAST_DIRECTION = [1, 0]
 
 # Key input
-key_input = { pygame.K_w: NORTH_DIRECTION, pygame.K_s: SOUTH_DIRECTION, pygame.K_a: WEST_DIRECTION, pygame.K_d:EAST_DIRECTION}
+key_input = { pygame.K_UP: NORTH_DIRECTION, pygame.K_DOWN: SOUTH_DIRECTION, pygame.K_LEFT: WEST_DIRECTION, pygame.K_RIGHT:EAST_DIRECTION}
 key_input_list = [NORTH_DIRECTION, SOUTH_DIRECTION, WEST_DIRECTION, EAST_DIRECTION]
 
 # Color
@@ -38,10 +38,12 @@ professor_image_base = pygame.image.load("Character2.png")
 # professor_mon_image_base = pygame.image.load("Character2.png")
 
 # Background Image Load
-backgroundImage = pygame.image.load("ground.png")
-main_surface_image = pygame.transform.scale(backgroundImage, (WINDOWWIDTH, WINDOWHEIGHT))
-backgroundImage1 = pygame.image.load("ground2.png")
-stage1_surface_image = pygame.transform.scale(backgroundImage1, (WINDOWWIDTH, WINDOWHEIGHT))
+professor_lab = pygame.image.load("professor_lab.png")
+main_surface_image = pygame.transform.scale(professor_lab, (WINDOWWIDTH, WINDOWHEIGHT))
+tree_ground = pygame.image.load("tree_ground.png")
+stage1_surface_image = pygame.transform.scale(tree_ground, (WINDOWWIDTH, WINDOWHEIGHT))
+wlfhl_ground = pygame.image.load("land_ground.png")
+stage2_surface_image = pygame.transform.scale(wlfhl_ground, (WINDOWWIDTH, WINDOWHEIGHT))
 
 
 # Asset Image Load
@@ -70,6 +72,19 @@ health_bar =  pygame.image.load("health-bar.png")
 # Professor Said File open
 professor_said = open("ProfessorSaid.txt", 'r', encoding='UTF8')
 
+# Sound
+# hit_sound = pygame.mixer.Sound("hit_sound.mp3")
+
+pygame.init()
+# basicFont = pygame.font.SysFont("NanumGothic.ttf", 32)
+basicFont = pygame.font.SysFont("휴먼매직체",20)
+mainClock = pygame.time.Clock()
+
+start_sound = pygame.mixer.Sound("start_sound.flac")
+hit_sound = pygame.mixer.Sound("hit_sound.flac")
+monster_attack_sound = hit_sound = pygame.mixer.Sound("monster_attack_sound.flac")
+bomb_sound = pygame.mixer.Sound("bomb_sound.wav")
+
 # pygame.init()
 # windowSurface.fill(WHITE)
 
@@ -77,6 +92,7 @@ professor_said = open("ProfessorSaid.txt", 'r', encoding='UTF8')
 # # print('time needed for Font Creation : ', time.time() - t0)
 # img1 = font1.render('HELLO WOLRD! 안녕하세요!',True,BLUE)
 # windowSurface.blit(img1, (50,50))
+# hit_sound.play()
 
 # pygame.display.update()
 

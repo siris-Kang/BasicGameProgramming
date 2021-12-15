@@ -9,7 +9,7 @@ class GetTextFromFile:
         self.line_list = self.divide_lines_to_list(self.line)
     
     def divide_lines_to_list(self, lines):
-        line_list = [[0] * 8 for _ in range(8)] # 동적할당 하면 좋을텐데
+        line_list = [[0] * 9 for _ in range(9)] # 동적할당 하면 좋을텐데
         count_block = 0
         count_line = 0
         for line in lines:
@@ -55,7 +55,6 @@ class DrawMessageBox(DrawUI):
 
     def draw_message(self, text):
         self.draw_image()
-        # draw_text = self.font.render(str(text), True, Setting.WHITE)
         draw_text = self.font.render(str(text), True, Setting.WHITE)
         textRectObj = draw_text.get_rect()
         textRectObj = (self.position[0]+50, self.position[1]+50)
